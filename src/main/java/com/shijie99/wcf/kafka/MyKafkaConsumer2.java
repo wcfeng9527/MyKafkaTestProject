@@ -13,7 +13,10 @@ import org.apache.kafka.common.TopicPartition;
  */
 public class MyKafkaConsumer2 {
 	public static void main(String[] args) throws Exception{
-		KafkaConsumer<String, MyLog> consumer = KafkaUtil.getConsumer();
+		KafkaConsumer<String, MyLog> consumer = KafkaUtil.getConsumer(MyLog.class);
+		if(consumer==null){
+			throw new Exception("consumer not found");
+		}
 	    String topic = "test";
 	    TopicPartition partition0 = new TopicPartition(topic, 0);
 	    TopicPartition partition1 = new TopicPartition(topic, 1);

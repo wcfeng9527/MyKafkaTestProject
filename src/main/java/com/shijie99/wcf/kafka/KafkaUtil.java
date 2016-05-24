@@ -6,10 +6,11 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 
 public class KafkaUtil {
-	private static KafkaProducer<String, MyLog> kp;
-	private static KafkaConsumer<String, MyLog> kc;
+	private static KafkaProducer<String, ?> kp;
+	private static KafkaConsumer<String, ?> kc;
 
-	public static KafkaProducer<String,MyLog> getProducer() {
+	@SuppressWarnings("unchecked")
+	public static  <T> KafkaProducer<String,T> getProducer(Class<T> clazz) {
 		if (kp == null) {
 			Properties props = new Properties();
 			props.put("bootstrap.servers", "10.0.0.100:9092,10.0.0.101:9092");
@@ -19,12 +20,13 @@ public class KafkaUtil {
 			props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 			//value序列化对象，自定义对象，可序列化实现了Serializer接口的对象
 			props.put("value.serializer", "com.shijie99.wcf.kafka.LogSerializer");
-			kp = new KafkaProducer<String, MyLog>(props);
+			kp = new KafkaProducer<String, T>(props);
 		}
-		return kp;
+		return (KafkaProducer<String, T>) kp;
 	}
 	
-	public static KafkaConsumer<String, MyLog> getConsumer() {
+	@SuppressWarnings("unchecked")
+	public static <T> KafkaConsumer<String,T> getConsumer(Class<T> clazz) {
 		if(kc == null) {
 			Properties props = new Properties();
 			props.put("bootstrap.servers", "10.0.0.100:9092,10.0.0.101:9092");
@@ -45,8 +47,8 @@ public class KafkaUtil {
 			props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 			//value反序列化对象，自定义对象，可反序列化实现了Serializer接口的对象
 			props.put("value.deserializer", "com.shijie99.wcf.kafka.LogDeserializer");
-			kc = new KafkaConsumer<String, MyLog>(props);
+			kc = new KafkaConsumer<String, T>(props);
 		}
-		return kc;
+		return (KafkaConsumer<String, T>) kc;
 	}
 }

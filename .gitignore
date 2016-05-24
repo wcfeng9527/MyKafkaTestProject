@@ -17,3 +17,4 @@ hs_err_pid*
 .project
 .tern-project
 .mymetadata
+/src/main/webapp/WEB-INF/classes/

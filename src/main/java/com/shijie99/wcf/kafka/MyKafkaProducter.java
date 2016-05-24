@@ -8,7 +8,11 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 
 public class MyKafkaProducter {
 	public static void main(String[] args) throws Exception{
-		Producer<String, MyLog> producer = KafkaUtil.getProducer();
+		Producer<String,MyLog> producer = KafkaUtil.getProducer(MyLog.class);
+		
+		if(producer ==null){
+			throw new Exception("producer not found");
+		}
 		int i = 0;
 		while(true) {
 			ProducerRecord<String, MyLog> record = new ProducerRecord<String, MyLog>("test", String.valueOf(i), new MyLog(1,"message:"+i,"name:"+i));

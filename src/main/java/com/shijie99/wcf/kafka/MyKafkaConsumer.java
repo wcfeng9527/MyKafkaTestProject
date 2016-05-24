@@ -14,7 +14,10 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 public class MyKafkaConsumer {
 
 	public static void main(String[] args) throws Exception{
-		KafkaConsumer<String, MyLog> consumer = KafkaUtil.getConsumer();
+		KafkaConsumer<String,MyLog> consumer = KafkaUtil.getConsumer(MyLog.class);
+		if(consumer==null){
+			throw new Exception("consumer not found");
+		}
 		consumer.subscribe(Arrays.asList("test"));
 		while(true) {
 			ConsumerRecords<String,MyLog> records = consumer.poll(1000);
