@@ -1,8 +1,11 @@
 package com.shijie99.wcf.kafka;
 
+import java.io.Serializable;
+
 import com.alibaba.fastjson.JSON;
 
-public class MyLog {
+public class MyLog implements Serializable{
+	private static final long serialVersionUID = -514541550600383768L;
 	private int id;
 	private String message;
 	private String name;

@@ -6,7 +6,11 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
-
+/**
+ * 使用负载均衡获取数据
+ * @author Administrator
+ *
+ */
 public class MyKafkaConsumer {
 
 	public static void main(String[] args) throws Exception{

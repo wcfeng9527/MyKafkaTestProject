@@ -1,12 +1,16 @@
 package com.shijie99.wcf.kafka;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.ParameterizedType;
 import java.util.Map;
 
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Serializer;
 
-public class KeywordMassage implements Serializer<MyLog> {
+public class LogSerializer<T> implements Serializer<T> {
 	private String encoding = "UTF8";
 
 	@Override
@@ -21,18 +25,29 @@ public class KeywordMassage implements Serializer<MyLog> {
 			encoding = (String) encodingValue;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public byte[] serialize(String topic, MyLog data) {
+	public byte[] serialize(String topic, T data) {
 		try {
 			if (data == null) {
 				return null;
 			} else {
-				return data.toString().getBytes(encoding);
+				ByteArrayOutputStream bo = new ByteArrayOutputStream();
+				ObjectOutputStream  os = new ObjectOutputStream(bo);
+				os.writeObject(data);
+				return bo.toByteArray();
+				//使用序列化对象方式转换成字节
+				//return data.toString().getBytes(encoding);
 			}
 		} catch (UnsupportedEncodingException e) {
 			throw new SerializationException(
-					"Error when serializing string to byte[] due to unsupported encoding "
+					"Error when serializing MyLog to byte[] due to unsupported encoding "
 							+ encoding);
+		} catch (IOException e) {
+			//获取数据类型
+			Class<T> clazz = (Class<T>) ((ParameterizedType) getClass()
+	                .getGenericSuperclass()).getActualTypeArguments()[0];
+			throw new  SerializationException("Error when serializing "+clazz.getClass().getName()+" to byte[]");
 		}
 	}
 
@@ -40,5 +55,6 @@ public class KeywordMassage implements Serializer<MyLog> {
 	public void close() {
 		// noting todo
 	}
+
 
 }
