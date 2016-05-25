@@ -18,9 +18,9 @@ public class MyKafkaConsumer {
 		if(consumer==null){
 			throw new Exception("consumer not found");
 		}
-		consumer.subscribe(Arrays.asList("test"));
+		consumer.subscribe(Arrays.asList("test5"));
 		while(true) {
-			ConsumerRecords<String,MyLog> records = consumer.poll(1000);
+			ConsumerRecords<String,MyLog> records = consumer.poll(10);
 			for(ConsumerRecord<String, MyLog> record : records) {
 				System.out.println("fetched from partition " + record.partition() + ", offset: " + record.offset() + ", message: " + record.value());
 			}

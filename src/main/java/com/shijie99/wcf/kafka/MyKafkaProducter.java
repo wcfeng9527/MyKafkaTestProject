@@ -15,7 +15,7 @@ public class MyKafkaProducter {
 		}
 		int i = 0;
 		while(true) {
-			ProducerRecord<String, MyLog> record = new ProducerRecord<String, MyLog>("test", String.valueOf(i), new MyLog(1,"message:"+i,"name:"+i));
+			ProducerRecord<String, MyLog> record = new ProducerRecord<String, MyLog>("test6", String.valueOf(i), new MyLog(1,"message:"+i,"name:"+i));
 			producer.send(record, new Callback() {
 				public void onCompletion(RecordMetadata metadata, Exception e) {
 					if (e != null)
@@ -27,4 +27,21 @@ public class MyKafkaProducter {
 			Thread.sleep(1000);
 		}
 	}
+	
+//	public static void main(String[] args) throws Exception{  
+//        Producer<String, String> producer = KafkaUtil.getProducer();  
+//        int i = 0;  
+//        while(true) {  
+//            ProducerRecord<String, String> record = new ProducerRecord<String, String>("test4", String.valueOf(i), "this is message"+i);  
+//            producer.send(record, new Callback() {  
+//                public void onCompletion(RecordMetadata metadata, Exception e) {  
+//                    if (e != null)  
+//                        e.printStackTrace();  
+//                    System.out.println("message send to partition " + metadata.partition() + ", offset: " + metadata.offset());  
+//                }  
+//            });  
+//            i++;  
+//            Thread.sleep(1000);  
+//        }  
+//    }  
 }
