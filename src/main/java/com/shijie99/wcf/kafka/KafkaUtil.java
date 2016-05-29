@@ -21,6 +21,8 @@ public class KafkaUtil {
 			props.put("batch.size", 16384);
 			props.put("key.serializer",
 					"org.apache.kafka.common.serialization.StringSerializer");
+			//延迟推送消息设置，设置该配置后，会延迟一定时间将消息推送到服务器，也就实现了批量推送的目的
+			props.put("linger.ms", 5000);
 			// value序列化对象，自定义对象，可序列化实现了Serializer接口的对象
 			 props.put("value.serializer","com.shijie99.wcf.kafka.LogSerializer");
 //			props.put("value.serializer","org.apache.kafka.common.serialization.StringSerializer");

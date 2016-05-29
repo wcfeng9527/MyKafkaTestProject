@@ -15,14 +15,17 @@ public class MyKafkaProducter {
 		}
 		int i = 0;
 		while(true) {
-			ProducerRecord<String, MyLog> record = new ProducerRecord<String, MyLog>("test6", String.valueOf(i), new MyLog(1,"message:"+i,"name:"+i));
+			ProducerRecord<String, MyLog> record = new ProducerRecord<String, MyLog>("test2", String.valueOf(i), new MyLog(1,"message:"+i,"name:"+i));
+			final long start=System.currentTimeMillis();
 			producer.send(record, new Callback() {
 				public void onCompletion(RecordMetadata metadata, Exception e) {
 					if (e != null)
 						e.printStackTrace();
+					System.out.println("----耗时："+(System.currentTimeMillis()-start)+"毫秒");
 					System.out.println("message send to partition " + metadata.partition() + ", offset: " + metadata.offset());
 				}
 			});
+			System.out.println("耗时："+(System.currentTimeMillis()-start)+"毫秒");
 			i++;
 			Thread.sleep(1000);
 		}
