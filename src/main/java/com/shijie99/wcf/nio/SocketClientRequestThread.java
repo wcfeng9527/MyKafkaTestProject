@@ -55,7 +55,7 @@ public class SocketClientRequestThread implements Runnable {
             this.countDownLatch.await();
 
             //发送请求信息
-            clientRequest.write(("这是第" + this.clientIndex + " 个客户端的请求。").getBytes());
+            clientRequest.write(("这是第" + this.clientIndex + " 个客户端的请求。个客户端的请求。个客户端的请求。").getBytes());
             clientRequest.flush();
             TimeUnit.SECONDS.sleep(2);
             clientRequest.write(("这是第" + this.clientIndex + " 个客户端的请求,完成over").getBytes());

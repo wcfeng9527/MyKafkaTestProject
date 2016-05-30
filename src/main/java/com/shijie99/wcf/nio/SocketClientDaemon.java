@@ -4,7 +4,7 @@ import java.util.concurrent.CountDownLatch;
 
 public class SocketClientDaemon {
 	 public static void main(String[] args) throws Exception {
-	        Integer clientNumber = 1;
+	        Integer clientNumber = 2;
 	        CountDownLatch countDownLatch = new CountDownLatch(clientNumber);
 
 	        //分别开始启动这20个客户端
