@@ -5,24 +5,21 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 public class SocketClientRequestThread implements Runnable {
-	static {
-        BasicConfigurator.configure();
-    }
-
-    /**
-     * 日志
-     */
-    private static final Log LOGGER = LogFactory.getLog(SocketClientRequestThread.class);
+	/**
+	 * 日志
+	 */
+	private static final Logger LOGGER = Logger.getLogger(SocketClientRequestThread.class);
 
     private CountDownLatch countDownLatch;
+    private static Random random = new Random();
 
     /**
      * 这个线层的编号
@@ -47,18 +44,22 @@ public class SocketClientRequestThread implements Runnable {
         InputStream clientResponse = null;
 
         try {
-            socket = new Socket("localhost",83);
-            clientRequest = socket.getOutputStream();
-            clientResponse = socket.getInputStream();
+           
 
             //等待，直到SocketClientDaemon完成所有线程的启动，然后所有线程一起发送请求
             this.countDownLatch.await();
-
+            int s = random.nextInt(10);
+            SocketClientRequestThread.LOGGER.info("线程："+this.clientIndex+"将在："+s+"秒后开始建立通道并开始发送数据");
+            TimeUnit.SECONDS.sleep(s);
+            
+            socket = new Socket("localhost",83);
+            clientRequest = socket.getOutputStream();
+            clientResponse = socket.getInputStream();
             //发送请求信息
-            clientRequest.write(("这是第" + this.clientIndex + " 个客户端的请求。个客户端的请求。个客户端的请求。").getBytes());
+            clientRequest.write(URLEncoder.encode("这是第" + this.clientIndex + " 个客户端的请求,请求还没有发送完成,请等待。", "utf-8").getBytes());
             clientRequest.flush();
-            TimeUnit.SECONDS.sleep(2);
-            clientRequest.write(("这是第" + this.clientIndex + " 个客户端的请求,完成over").getBytes());
+            TimeUnit.SECONDS.sleep(3+random.nextInt(10));
+            clientRequest.write(URLEncoder.encode("这是第" + this.clientIndex + " 个客户端的请求,完成over", "utf-8").getBytes());
             clientRequest.flush();
             //在这里等待，直到服务器返回信息
             SocketClientRequestThread.LOGGER.info("第" + this.clientIndex + "个客户端的请求发送完成，等待服务器返回信息");

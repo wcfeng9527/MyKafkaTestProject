@@ -12,6 +12,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -34,11 +35,18 @@ public class SocketServer2 {
 		serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 		try{
 			while(true){
-				if(selector.select(100)==0){
+//				if(selector.select(100)==0){
 //					SocketServer1.LOGGER.info("======正在等待数据来到=======");
-					continue;
+//					continue;
+//				}
+				selector.select();
+				SocketServer2.LOGGER.info("======selector监听到新的Channel到来了=======");
+				
+				Iterator<SelectionKey> key = selector.keys().iterator();
+				while(key.hasNext()){
+					SocketServer2.LOGGER.info("&&&&&&&&当前已注册的通道hashCode："+key.next().channel().hashCode());
 				}
-				 //这里就是本次询问操作系统，所获取到的“所关心的事件”的事件类型（每一个通道都是独立的）
+				//这里就是本次询问操作系统，所获取到的“所关心的事件”的事件类型（每一个通道都是独立的）
 				Iterator<SelectionKey> selectionKey =selector.selectedKeys().iterator();
 				while(selectionKey.hasNext()){
 					SelectionKey readyKey = selectionKey.next();
@@ -57,7 +65,9 @@ public class SocketServer2 {
 						 * 否则无法监听到这个socket channel到达的数据
 						 */
 						ServerSocketChannel serverSocketChannel = (ServerSocketChannel) readyKey.channel();
+						SocketServer2.LOGGER.info("*************serverSocketChannel 的hashCode:"+serverSocketChannel.hashCode());
 						SocketChannel socketChannel = serverSocketChannel.accept();
+						SocketServer2.LOGGER.info("*************socketChannel 的hashCode:"+socketChannel.hashCode());
 						// 设置成非阻塞模式
 						socketChannel.configureBlocking(false);
 						//socket通道可以且只可以注册三种事件SelectionKey.OP_READ | SelectionKey.OP_WRITE | SelectionKey.OP_CONNECT
@@ -91,7 +101,7 @@ public class SocketServer2 {
 				        	//注意中文乱码的问题，我个人喜好是使用URLDecoder/URLEncoder，进行解编码。
 				            //当然java nio框架本身也提供编解码方式，看个人咯
 				            String messageEncode = new String(messageBytes , 0 , realLen , "UTF-8");
-				            SocketServer2.LOGGER.info("端口："+resoucePort+"客户端方来的消息======messageEncode:"+messageEncode);
+				            SocketServer2.LOGGER.info("端口："+resoucePort+",hashCode:"+clientSocketChannel.hashCode()+"客户端方来的消息======messageEncode:"+messageEncode);
 				            message.append(messageEncode);
 
 				            //再切换成“写”模式，直接清空缓存的方式，最快捷
@@ -100,7 +110,7 @@ public class SocketServer2 {
 				        
 				        if(URLDecoder.decode(message.toString(), "utf-8").indexOf("over")!=-1){
 				        	Integer channelUUID = clientSocketChannel.hashCode();
-				        	 SocketServer2.LOGGER.info("端口："+resoucePort+"客户端方来的消息======message:"+message);
+				        	 SocketServer2.LOGGER.info("端口："+resoucePort+",hashCode:"+clientSocketChannel.hashCode()+"客户端方来的消息======message:"+message);
 				        	 StringBuffer completeMessage;
 				        	 StringBuffer historyMessage = MESSAGEHASHCONTEXT.get(channelUUID);
 				        	 if(historyMessage==null){
@@ -109,13 +119,13 @@ public class SocketServer2 {
 				        		 completeMessage = historyMessage.append(message);
 				        	 }
 				        	 MESSAGEHASHCONTEXT.put(channelUUID, completeMessage);
-				        	 SocketServer2.LOGGER.info("端口:" + resoucePort + "客户端发来的完整信息======completeMessage : " + URLDecoder.decode(completeMessage.toString(), "UTF-8"));
-				        	 Iterator<Integer> it = MESSAGEHASHCONTEXT.keySet().iterator();
-				        	 SocketServer2.LOGGER.info("当前接收的信息：");
-				        	 while(it.hasNext()){
-				        		 Integer key = it.next();
-				        		 SocketServer2.LOGGER.info("channelUUID:"+key+",message:"+MESSAGEHASHCONTEXT.get(key));
-				        	 }
+				        	 SocketServer2.LOGGER.info("端口:" + resoucePort +",hashCode:"+clientSocketChannel.hashCode()+ "客户端发来的完整信息======completeMessage : " + URLDecoder.decode(completeMessage.toString(), "UTF-8"));
+//				        	 Iterator<Integer> it = MESSAGEHASHCONTEXT.keySet().iterator();
+//				        	 SocketServer2.LOGGER.info("当前接收的信息：");
+//				        	 while(it.hasNext()){
+//				        		 Integer key = it.next();
+//				        		 SocketServer2.LOGGER.info("channelUUID:"+key+",message:"+MESSAGEHASHCONTEXT.get(key));
+//				        	 }
 
 				             //======================================================
 				             //          当然接受完成后，可以在这里正式处理业务了        
@@ -125,6 +135,12 @@ public class SocketServer2 {
 				        	 ByteBuffer sendBuffer = ByteBuffer.wrap(URLEncoder.encode("回发处理结果", "UTF-8").getBytes());
 				             clientSocketChannel.write(sendBuffer);
 				             clientSocketChannel.close();
+				             TimeUnit.SECONDS.sleep(2);
+				             Iterator<SelectionKey> tmpkey = readyKey.selector().keys().iterator();
+				             SocketServer2.LOGGER.info("selector.key.size:"+readyKey.selector().keys().size());
+				             while(tmpkey.hasNext()){
+				            	 SocketServer2.LOGGER.info("%%%%%%%%当前已注册的通道hashCode："+tmpkey.next().channel().hashCode());
+				             }
 				        }else{
 				        	//每一个channel对象都是独立的，所以可以使用对象的hash值，作为唯一标示
 				            Integer channelUUID = clientSocketChannel.hashCode();

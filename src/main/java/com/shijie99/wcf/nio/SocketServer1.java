@@ -40,7 +40,7 @@ public class SocketServer1 {
 //					SocketServer1.LOGGER.info("======正在等待数据来到=======");
 					continue;
 				}
-				
+				SocketServer1.LOGGER.info("======selector监听到新的Channel到来了=======");
 				Iterator<SelectionKey> selectionKey = selector.selectedKeys().iterator();
 				while(selectionKey.hasNext()){
 					SelectionKey readyKey = selectionKey.next(); 
