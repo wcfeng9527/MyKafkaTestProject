@@ -14,7 +14,7 @@ public class KafkaUtil {
 	public static <T> KafkaProducer<String, T> getProducer(Class<T> clazz) {
 		if (kp == null) {
 			Properties props = new Properties();
-			props.put("bootstrap.servers","101.200.209.162:9092,101.200.209.162:9091");
+			props.put("bootstrap.servers","192.168.149.132:9092");
 			props.put("acks", "1");
 			props.put("retries", 0);
 			props.put("batch.size", 16384);
@@ -51,8 +51,7 @@ public class KafkaUtil {
 	public static <T> KafkaConsumer<String, T> getConsumer(Class<T> clazz) {
 		if (kc == null) {
 			Properties props = new Properties();
-			props.put("bootstrap.servers",
-					"101.200.209.162:9092,101.200.209.162:9091");
+			props.put("bootstrap.servers","192.168.149.132:9092");
 			// Consumer的group
 			// id，同一个group下的多个Consumer不会拉取到重复的消息，不同group下的Consumer则会保证拉取到每一条消息。
 			// 注意，同一个group下的consumer数量不能超过分区数
@@ -63,7 +62,7 @@ public class KafkaUtil {
 			props.put("max.partition.fetch.bytes", 1024 * 1024);
 			// 是否自动提交已拉取消息的offset。
 			// 提交offset即视为该消息已经成功被消费，该组下的Consumer无法再拉取到该消息（除非手动修改offset）。默认为true
-			props.put("enable.auto.commit", "false");
+			props.put("enable.auto.commit", "true");
 			// 自动提交offset的间隔毫秒数，默认5000。
 			props.put("auto.commit.interval.ms", "1000");
 			props.put("session.timeout.ms", "30000");

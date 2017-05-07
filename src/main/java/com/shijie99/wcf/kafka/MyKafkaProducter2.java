@@ -6,16 +6,16 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
 
-public class MyKafkaProducter {
+public class MyKafkaProducter2 {
 	public static void main(String[] args) throws Exception{
-		Producer<String,MyLog> producer = KafkaUtil.getProducer(MyLog.class);
+		Producer<String,String> producer = KafkaUtil.getProducer(String.class);
 		
 		if(producer ==null){
 			throw new Exception("producer not found");
 		}
 		int i = 0;
 		while(true) {
-			ProducerRecord<String, MyLog> record = new ProducerRecord<String, MyLog>("test", String.valueOf(i), new MyLog(1,"message:"+i,"name:"+i));
+			ProducerRecord<String, String> record = new ProducerRecord<String, String>("test", String.valueOf(i), "this is a test message"+i);
 			final long start=System.currentTimeMillis();
 			producer.send(record, new Callback() {
 				public void onCompletion(RecordMetadata metadata, Exception e) {
